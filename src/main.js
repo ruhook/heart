@@ -46,7 +46,7 @@ import 'echarts/lib/component/markArea';
 import 'echarts/lib/component/timeline';
 import 'echarts/lib/component/toolbox';
 
-import 'zrender/lib/vml/vml';
+import 'zrender/lib/vml/vml'
 
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
