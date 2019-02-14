@@ -11,7 +11,7 @@
       <h3 class="title">百乘财富</h3>
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <!-- <svg-icon icon-class="user" /> -->
         </span>
         <el-input
           v-model="loginForm.username"
@@ -23,7 +23,7 @@
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">
-          <svg-icon icon-class="password" />
+          <!-- <svg-icon icon-class="password" /> -->
         </span>
         <el-input
           :type="pwdType"
@@ -37,7 +37,7 @@
           class="show-pwd"
           @click="showPwd"
         >
-          <svg-icon icon-class="eye" />
+          <!-- <svg-icon icon-class="eye" /> -->
         </span>
       </el-form-item>
       <el-form-item>
@@ -78,8 +78,8 @@ export default {
     }
     return {
       loginForm: {
-        username: '',
-        password: ''
+        username: 'admin',
+        password: '123456'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -90,14 +90,6 @@ export default {
       redirect: undefined
     }
   },
-  // watch: {
-  //   $route: {
-  //     handler: function (route) {
-  //       this.redirect = route.query && route.query.redirect
-  //     },
-  //     immediate: true
-  //   }
-  // },
   mounted () {
 
   },
@@ -114,14 +106,12 @@ export default {
       this.$refs.loginForm.validate(async (valid) => {
         if (valid)        {
           let options = {
-            mobile: this.loginForm.username,
+            name: this.loginForm.username,
             password: this.loginForm.password
           }
+         
           let result = await toLogin(options)
-          console.log(result.data)
-          // let { data } = result
-          // console.log(data.permission)
-          //employeeToken
+          localStorage.setItem('token', result.data)
 
           this.$router.push('/')
         } else        {

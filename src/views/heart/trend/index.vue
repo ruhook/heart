@@ -1,49 +1,29 @@
 <template>
   <div class="trend">
-    <div class="scatter-24">
-      <v-chart
-        :options="options"
-        class="chart"
-      />
-    </div>
+    <chart24/>
+    <chart1/>
+
   </div>
 </template>
 
 <script>
-import { getPoints } from 'api'
-import { options_24, setSeries } from './config.js'
+import chart24 from './chart-24'
+import chart1 from './chart-1'
+
 export default {
   data () {
     return {
-      options: options_24
     }
   },
-  created () {
-    this._getPoints()
-  },
-  methods: {
-    async _getPoints () {
-      let result = await getPoints()
 
-      console.log(result)
-      let data = result.data.points.map(item => [item.t, item.y])
-      setSeries.call(this, data)
-    }
-  }
+  components:{chart24,chart1}
 }
 </script>
 
 <style scoped lang='scss' type='text/css'>
 .trend{
   width: 100%;
-  .scatter-24{
-    height: 300px; 
-    width: 100%;
-    .chart{
-      width: 100%;
-      height: 300px;
-    }
-  }
+  
 }
 
 </style>

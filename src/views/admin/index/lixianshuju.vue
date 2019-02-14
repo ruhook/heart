@@ -1,40 +1,56 @@
 <template>
   <div class="lixianshuju">
-    <div class="name">王小虎的离线数据</div>
+    <div class="name">{{deviceName}}的离线数据</div>
     <div class="table-warp">
       <el-table
         :data="tableData"
         style="width: 100%"
       >
         <el-table-column
-          prop="startTime"
-          label="开始时间"
-          width="260"
+          prop="planTime"
+          label="数据日期"
+          width="180"
         >
         </el-table-column>
         <el-table-column
-          width="260"
-          prop="endTime"
-          label="结束时间"
+          prop="ecgBeatCount"
+          label="当天心跳次数"
+          width="180"
+          align="center"
         >
         </el-table-column>
         <el-table-column
-          prop="dataState"
+          prop="ecgBeatGraphCount"
+          label="归类数量"
+          width="180"
+          align="center"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="ecgRawPacketCount"
+          label="接受数据包数量"
+          width="180"
+          align="center"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="status"
           label="数据状态"
+          align="center"
         >
           <template slot-scope="scope">
-            <el-tag :type="scope.row.dataState === '正在采集' ? '' : scope.row.dataState === '未编辑' ?  'danger': 'success' ">{{scope.row.dataState}}</el-tag>
+            <el-tag :type="scope.row.status === 0 ? '' : scope.row.status === 1 ?  'danger': 'success' ">{{statusList[scope.row.status]}}</el-tag>
           </template>
         </el-table-column>
+
         <el-table-column
-          fixed="right"
           align="center"
           label="操作"
           width="200"
         >
           <template slot-scope="scope">
             <el-button
-              @click="handleClick(scope.row)"
+              @click="handleClick(scope.row.id)"
               size="small"
             >查看心电图</el-button>
           </template>
@@ -58,36 +74,42 @@
 </template>
 
 <script>
+import { getPlan } from 'api/admin'
 
 export default {
   data () {
     return {
+      deviceName: '',
       current: 1,
-      total: 40,
-      tableData: [{
-        startTime: '2016-05-04 00:00:00',
-        endTime: '2016-05-04 23:59:59',
-        dataState: '正在采集'
-      }, {
-        startTime: '2016-05-04 00:00:00',
-        endTime: '2016-05-04 23:59:59',
-        dataState: '未编辑'
-      }, {
-        startTime: '2016-05-04 00:00:00',
-        endTime: '2016-05-04 23:59:59',
-        dataState: '已编辑'
-      },]
+      total: 0,
+      tableData: [],
+      statusList: ['数据上传中', '数据未编辑', '数据已经编辑']
     }
   },
+  metaInfo: {
+    title: '心电图后台管理-离线数据'
+  },
+  mounted () {
+    let deviceName = this.$route.params.name
+    this.deviceName = deviceName
+    this._getPlan(deviceName)
+  },
   methods: {
+    async _getPlan (deviceName, pageNum, pageSize) {
+      let result = await getPlan(deviceName, pageNum, pageSize)
+
+      this.tableData = result.resultData
+      this.total = result.total
+    },
     handleSizeChange (val) {
 
     },
     handleCurrentChange (val) {
 
     },
-    handleClick(){
-      window.open('/mould')
+    handleClick (id) {
+      localStorage.setItem('planId', id)
+      window.open(`/mould/${id}`)
     }
   },
 }

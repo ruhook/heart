@@ -4,10 +4,10 @@ import qs from 'qs'
 import axios from 'axios'
 import { error } from './enum'
 
-
 let STI_AJAX_BASEURL = '/api'
 let STI_AJAX_TIMEOUT = 50000
 let STI_LOGIN_URL = '/login'
+let vue = new Vue()
 const serialize = JSON.stringify
 
 function extendToken(data) {
@@ -41,7 +41,7 @@ const http = axios.create({
   // }],
   // 只适用'POST'、'PUT'、'PATCH'，序列化参数
   transformRequest: [function(data) {
-      return serialize(data)
+    return serialize(data)
   }],
   // GET请求，序列化参数，只有在有参数的情况先才会执行
   paramsSerializer: function(params) {
@@ -69,6 +69,13 @@ http.interceptors.request.use(function(request) {
  */
 http.interceptors.response.use(function(response) {
   const { config, data } = response
+  if (data.head.errCode) {
+    vue.$notify.error({
+      title: '提示',
+      message: data.head.errMsg
+    })
+    return Promise.reject(data)
+  }
   return data
 }, function(error) {
   console.log(error)
@@ -102,13 +109,16 @@ const ajax = function(config) {
 ajax.post = function(...args) {
   let [url, data = {}, options] = args
   console.log("%c%s", "color: blue;", url);
+  let headers = {
+    'Content-Type': 'application/json;charset=utf-8'
+  }
+  if (localStorage.getItem('token')) {
+    headers['token'] = localStorage.getItem('token')
+  }
   return http({
     url,
     data,
-    headers: {
-      'Content-Type': 'application/json;charset=utf-8',
-      'token': 'j10qlBQ9s5QggNkLypqSyFPV57fVjlpNiDSP'
-    },
+    headers,
     method: 'post',
     ...options
   })

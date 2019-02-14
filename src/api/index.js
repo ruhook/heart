@@ -1,6 +1,10 @@
-import { heartType, heartThumbs, planId, heartDetails, ecgAdd, ecgUpdate, ecgDelete, typeUpdate, types, points } from './merge'
+import { heartType, heartThumbs, heartDetails, ecgAdd, ecgUpdate, ecgDelete, typeUpdate, types, points } from './merge'
 import axios from './ajax'
+import router from '../router'
 
+
+console.log(router)
+const planId = localStorage.getItem('planId') || null
 export function getHeartType() {
   return axios(heartType, {
     planId
@@ -57,8 +61,7 @@ export function deleteEcg(id) {
 
 export function getPoints() {
   return axios(points, {
-    "deviceName":"123456",
-    "start":0,
-    "end":14633598961761
+    "deviceName":"EM_01000002",
+    "time":"20160516"
 })
 }

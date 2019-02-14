@@ -9,11 +9,12 @@
       text-color="#fff"
       active-text-color="#ffd04b"
     >
-      <el-menu-item index="1">
+      <el-menu-item index="1" @click="$router.push('/home')">
         <i class="el-icon-menu"></i>
         <span slot="title">设备管理</span>
       </el-menu-item>
     </el-menu>
+
     <div class="admin-warp">
       <div class="tag-top">
         <div class="left">
@@ -57,6 +58,9 @@ export default {
 
     }
   },
+  metaInfo: {
+    title: '心电图后台管理'
+  },
   methods: {
     handleOpen (key, keyPath) {
       console.log(key, keyPath);
@@ -65,7 +69,8 @@ export default {
       console.log(key, keyPath);
     },
     logout () {
-
+      localStorage.clear()
+      this.$router.push('/login')
     }
   }
 }

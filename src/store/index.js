@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 import admin from './modules/admin'
 import mould from './modules/mould'
 import event from './modules/event'
+import trend from './modules/trend'
 import getters from './getters'
 
 Vue.use(Vuex)
@@ -11,7 +12,8 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   modules: {
     mould,
-    event
+    event,
+    trend
   },
   getters
 })

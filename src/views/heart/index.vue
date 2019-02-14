@@ -45,8 +45,9 @@ export default {
   },
   methods: {
     selectMenu(index){
-      console.log(index)
-      this.$router.push(this.router[index-1])
+      let planId = this.$route.params.id
+      localStorage.setItem('planId',planId)
+      this.$router.push(`${this.router[index-1]}/${planId}`)
     }
   },
 }
@@ -57,8 +58,8 @@ export default {
   display: flex;
     font-size: 16px;
     min-width: 1340px;
-    min-height: 750px;
-
+    // min-height: 750px;
+  width: 100%;
 }
   .menu{
     height: 100%;

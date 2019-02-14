@@ -11,7 +11,7 @@
     display: flex;
     font-size: 16px;
     min-width: 1340px;
-    min-height: 750px;
+    // min-height: 750px;
   }
 
 </style>

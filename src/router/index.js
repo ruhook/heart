@@ -16,6 +16,7 @@ Vue.use(Router)
 
 const adminRouter = [{
   path: '/login',
+  name:'login',
   component: Login
 }, {
   path: '/',
@@ -29,7 +30,7 @@ const adminRouter = [{
       icon: 'printer'
     }
   }, {
-    path: 'offlineData/:id',
+    path: 'offlineData/:name',
     component: lixianshuju,
     meta: {
       title: '离线数据',
@@ -43,20 +44,30 @@ const heartRouter = [{
   name: 'heartIndex',
   component: heartIndex,
   children: [{
-    path: '/mould',
+    path: '/mould/:id',
     name: 'mould',
     component: Mould,
   }, {
-    path: '/trend',
+    path: '/trend/:id',
     component: Trend
   }, {
-    path: '/report',
+    path: '/report/:id',
     component: Report
   }]
 }]
 
-export default new Router({
+let router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: adminRouter.concat(heartRouter)
 })
+
+router.beforeEach(async (to, from, next) => {
+  if (!localStorage.getItem('token') && to.name != 'login') {
+    next({ path: '/login', replace: false })
+  }
+
+  next()
+})
+
+export default router

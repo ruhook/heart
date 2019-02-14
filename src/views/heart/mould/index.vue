@@ -170,6 +170,9 @@ import selectTag from 'components/state/selectTag'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
+  metaInfo: {
+    title: '心电图-模块'
+  },
   mounted () {
     this.setHeartType()
     // this.setHeartThumbs({ beatGraphId: 62 })

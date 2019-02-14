@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store/index'
 
+import MetaInfo from 'vue-meta'
 import ECharts from 'vue-echarts/components/ECharts'
 
 import 'echarts/lib/chart/line';
@@ -52,7 +53,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
 Vue.use(ElementUI)
-
+Vue.use(MetaInfo)
 Vue.component('v-chart', ECharts)
 Vue.config.productionTip = false
 

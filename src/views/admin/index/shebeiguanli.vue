@@ -6,21 +6,33 @@
         style="width: 100%"
       >
         <el-table-column
-          prop="name"
-          label="用户名"
-          width="260"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="equipment"
+          prop="deviceName"
           label="设备名称"
           width="260"
         >
         </el-table-column>
         <el-table-column
-          prop="date"
+          prop="deviceId"
+          label="设备ID"
+          width="260"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="utcCreate"
           label="创建时间"
         >
+        </el-table-column>
+        <el-table-column
+          prop="deviceStatusStr"
+          label="设备状态"
+          width="260"
+        >
+          <!-- <template slot-scope="scope">
+            <el-button
+              @click="handleClick(scope.row)"
+              size="small"
+            >查看数据</el-button>
+          </template> -->
         </el-table-column>
         <el-table-column
           fixed="right"
@@ -30,7 +42,7 @@
         >
           <template slot-scope="scope">
             <el-button
-              @click="handleClick(scope.row)"
+              @click="$router.push(`/offlineData/${scope.row.deviceName}`)"
               size="small"
             >查看数据</el-button>
           </template>
@@ -54,38 +66,40 @@
 </template>
 
 <script>
+import { getDevice } from "api/admin"
+
 export default {
   data () {
     return {
       current: 1,
-      total: 40,
-      tableData: [{
-        name: '王小虎',
-        equipment: '设备名称',
-        date: '2016-05-04'
-      }, {
-        name: '王小虎',
-        equipment: '设备名称',
-        date: '2016-05-04'
-      }, {
-        name: '王小虎',
-        equipment: '设备名称',
-        date: '2016-05-04'
-      },]
+      total: 0,
+      tableData: []
     }
   },
+  metaInfo: {
+    title: '心电图后台管理-设备管理'
+  },
+  mounted() {
+    this._getDevice()
+  },
   methods: {
+    async _getDevice (pageNum, pageSize) {
+      let result = await getDevice(pageNum, pageSize)
+
+      this.tableData = result.resultData
+      this.total = result.total
+    },
     handleSizeChange (val) {
 
     },
     handleCurrentChange (val) {
 
     },
-    handleClick(){
+    handleClick () {
       this.$router.push('/offlineData/1')
     }
   },
-  
+
 }
 </script>
 
