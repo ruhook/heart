@@ -1,10 +1,9 @@
 import { heartType, heartThumbs, heartDetails, ecgAdd, ecgUpdate, ecgDelete, typeUpdate, types, points } from './merge'
 import axios from './ajax'
-import router from '../router'
 
+const planId = Number(localStorage.getItem('planId')) || null
 
-console.log(router)
-const planId = localStorage.getItem('planId') || null
+console.log(planId);
 export function getHeartType() {
   return axios(heartType, {
     planId
@@ -22,17 +21,18 @@ export function getHeartThumbs(beatGraphId, pageNum = 1) {
 
 export function getHeartDetails(options) {
   return axios(heartDetails, {
-    deviceName: options.deviceName,
+    planId,
     beatTime: options.beatTime
   })
 }
 export function getTypes() {
   return axios(types)
 }
-export function updateType() {
+
+export function updateType(id, beatTypeId) {
   return axios(typeUpdate, {
-    id: 11,
-    beatTypeId: 3
+    id,
+    beatTypeId
   })
 }
 
@@ -58,10 +58,16 @@ export function deleteEcg(id) {
 }
 
 
-
+//默认获取24h的
 export function getPoints() {
   return axios(points, {
-    "deviceName":"EM_01000002",
-    "time":"20160516"
-})
+    planId
+  })
+}
+//获取1h的
+export function getPointsHour(time) {
+  return axios(points, {
+    planId,
+    time: '2016051608'
+  })
 }

@@ -37,41 +37,51 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
   data () {
     return {
-      router:['/mould','','/trend','/report']
+      router: ['/mould', '', '/trend', '/report']
     }
   },
   methods: {
-    selectMenu(index){
+    selectMenu (index) {
+      this.setFirstGetDetails(true)
       let planId = this.$route.params.id
-      localStorage.setItem('planId',planId)
-      this.$router.push(`${this.router[index-1]}/${planId}`)
-    }
+      localStorage.setItem('planId', planId)
+      this.$router.push(`${this.router[index - 1]}/${planId}`)
+    },
+    ...mapMutations([
+      'setFirstGetDetails'
+    ])
   },
 }
 </script>
 
 <style scoped lang='scss' type='text/css'>
-.warp{
+.warp {
   display: flex;
-    font-size: 16px;
-    min-width: 1340px;
-    // min-height: 750px;
+  font-size: 16px;
+  min-width: 1340px;
+  // min-height: 750px;
   width: 100%;
 }
-  .menu{
-    height: 100%;
-  }
-  .logo {
-      width: 64px;
-      margin-top: 30px;
-    }
-    .content-warp{
-      display: flex;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
+.menu {
+  min-height: 750px;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.logo {
+  width: 64px;
+  margin-top: 30px;
+}
+.content-warp {
+  padding-left: 64px;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  // overflow: hidden;
+}
 </style>

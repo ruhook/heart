@@ -53,8 +53,8 @@ export const options = {
     type: 'value',
     // boundaryGap: [0, '100%'],
     minInterval: 5000,
-    min: -32768,
-    max: 32768,
+    min: -16000,
+    max: 16000,
     axisPointer: {
       snap: true
     }
@@ -74,8 +74,7 @@ export const options = {
     symbol: "none"
   }]
 }
-let min = -32000
-let max = 32000
+
 export function showDetails(isShowArea) {
   this.options.series = [{
     type: 'line',
@@ -130,39 +129,15 @@ export function showDetails(isShowArea) {
   }
 }
 
-export function add() {
-  if(max >= 32000){
-    this.$message.error('已经到达放大的最大倍数了');
-    return 
-  }
-  min -= 5000
-  max += 5000
-
+let min = -16000
+let max = 16000
+export function changeRatio(ratio) {
   this.options.yAxis = {
     splitLine: { show: false },
     type: 'value',
     minInterval: 5000,
-    min,
-    max,
-    axisPointer: {
-      snap: true
-    }
-  }
-}
-
-export function reduction() {
-  if(max <= 12000){
-    this.$message.error('已经到达缩小的的最大倍数了');
-    return 
-  }
-  min += 5000
-  max -= 5000
-  this.options.yAxis = {
-    splitLine: { show: false },
-    type: 'value',
-    minInterval: 5000,
-    min,
-    max,
+    min:min*ratio,
+    max:max*ratio,
     axisPointer: {
       snap: true
     }

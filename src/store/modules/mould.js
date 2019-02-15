@@ -2,7 +2,6 @@ import { getHeartType, getHeartThumbs, getHeartDetails, addEcg, updateEcg, delet
 import Vue from 'vue'
 let vue = new Vue()
 
-let firstGetDetails = true
 
 const mould = {
   state: {
@@ -15,8 +14,10 @@ const mould = {
     thumbLoading: true,
     details: {}, //详情图的数据
     selectDetail: {}, //选中的详情的点 默认beatTime的点
+    selectBeatTime: null,
     isIn: false,
-    typeShow: false
+    typeShow: false,
+    firstGetDetails: true
   },
   mutations: {
     SET_HEART_TYPE(state, data) {
@@ -44,14 +45,33 @@ const mould = {
     SET_SELECT_DETAIL(state, selectDetail) {
       state.selectDetail = selectDetail[0] || {}
     },
+    setSelectBeatTime(state, beatTime) {
+      state.selectBeatTime = beatTime
+    },
     SET_IS_IN(state, isIn) {
       state.isIn = isIn
     },
     setTypeShow(state, typeShow) {
       state.typeShow = typeShow
+    },
+    setFirstGetDetails(state, firstGetDetails) {
+      state.firstGetDetails = firstGetDetails
     }
   },
   actions: {
+    setChangedTypes({ commit, dispatch, state }) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          let result = await getHeartType()
+          let data = result.data
+
+          commit('SET_HEART_TYPE', data)
+          resolve()
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
     /**
      * 获取模块首次加载数据
      * 1、心波类型数据
@@ -68,14 +88,15 @@ const mould = {
      * @param {*} { commit }
      */
     setHeartType({ commit, dispatch, state }) {
+      commit('SET_DETAILS', {})
       return new Promise(async (resolve, reject) => {
         try {
           let result = await getHeartType()
           let data = result.data
-          
+
           commit('SET_HEART_TYPE', data)
           //只有第一次进入页面的时候 初始 type 为 获取的   之后都是点击缩略图之后 修改 
-          if (firstGetDetails) {
+          if (state.firstGetDetails) {
             commit('SET_DETAIL_NEED_TYPE', data[0].graphs[0].id)
           }
           commit('SET_SELECT_TYPE', data[0].graphs[0])
@@ -100,10 +121,10 @@ const mould = {
           let total = result.total
           commit('SET_THUMBS', resultData)
           commit('SET_THUMBS_TOTAL', total)
-          if (firstGetDetails) {
+          if (state.firstGetDetails) {
             commit('SET_ACTIVE_THUMB', { index: 0, ...result.resultData[0] })
 
-            firstGetDetails = false
+            commit('setFirstGetDetails', false)
             dispatch('setHeartDetails')
           }
           resolve()
@@ -120,8 +141,9 @@ const mould = {
       commit('SET_DETAILS', {})
       return new Promise(async (resolve, reject) => {
         try {
+          commit('setSelectBeatTime', state.activeThumb.beatTime)
+
           let options = {
-            deviceName: state.activeThumb.deviceName,
             beatTime: state.activeThumb.beatTime
           }
           let result = await getHeartDetails(options)
@@ -142,9 +164,38 @@ const mould = {
         }
       })
     },
+    /**
+     * 获取心波详情图  -- 翻页
+     * @param {*} { commit }
+     */
+    setHeartChangeDetails({ commit, state }) {
+      commit('SET_DETAILS', {})
+      return new Promise(async (resolve, reject) => {
+        try {
+          let options = {
+            beatTime: state.selectBeatTime
+          }
+          let result = await getHeartDetails(options)
+          // let resultData = result.resultData
+          // let total = result.total
+          commit('SET_DETAILS', result.data)
+          // commit('SET_ACTIVE_THUMB', {})
+          // commit(
+          //   'SET_SELECT_DETAIL',
+          //   result.data.beats.filter(item => {
+          //     return item.beatTime === result.data.showTime
+          //   })
+          // )
+
+          resolve()
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
     //新增ecg
-    async setAddEcg({ commit, state, dispatch }) {
-      let result = await dispatch('getIsIn')
+    async setAddEcg({ commit, state, dispatch }, from = 'mould') {
+      let result = await dispatch('getIsIn', from)
       if (state.isIn.length !== 0) {
         vue.$notify.error({
           title: '新增失败',
@@ -171,8 +222,8 @@ const mould = {
       })
     },
     //修改ecg
-    async setUpdateEcg({ commit, state, dispatch }) {
-      let result = await dispatch('getIsIn')
+    async setUpdateEcg({ commit, state, dispatch }, from = 'mould') {
+      let result = await dispatch('getIsIn', from)
       if (state.isIn.length === 0) {
         vue.$notify.error({
           title: '修改失败',
@@ -196,8 +247,8 @@ const mould = {
       })
     },
     //删除ecg
-    async setDeleteEcg({ commit, state, dispatch }) {
-      let result = await dispatch('getIsIn')
+    async setDeleteEcg({ commit, state, dispatch }, from = 'mould') {
+      let result = await dispatch('getIsIn', from)
       if (state.isIn.length === 0) {
         vue.$notify.error({
           title: '删除失败',
@@ -206,7 +257,7 @@ const mould = {
         return
       }
 
-     
+
       // deleteEcg
       return new Promise((resolve, reject) => {
         vue.$confirm('确认删除这条心跳？').then(async _ => {
@@ -224,7 +275,7 @@ const mould = {
           .catch(_ => {});
       })
     },
-    getIsIn({ commit, state, dispatch }) {
+    getIsIn({ commit, state, dispatch }, from) {
       return new Promise((resolve, reject) => {
         let data = state.selectDetail
         let dataIndex = state.selectDetail.dataIndex

@@ -86,6 +86,8 @@ export default {
   padding: 30px;
   min-width: 500px;
   width: 100%;
+  height: auto;
+  min-height: 750px;
   overflow: auto;
   .box-card{
     // display: flex;

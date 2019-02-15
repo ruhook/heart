@@ -1,3 +1,5 @@
+import store from 'store'
+let _time = null
 export const options_24 = {
   animation: false,
   tooltip: {
@@ -8,23 +10,35 @@ export const options_24 = {
     axisPointer: {
       type: 'line',
       lineStyle: {
-        color: 'red',
-        width: 100
+        color: 'rgba(245,8,26,0.7)',
+        width: 2
       }
     },
     formatter(param) {
       param = param[0]
-      return param.axisValue + '<br/><i class="el-icon-star-on" style="color:red;margin-right:10px;"></i>' + param.seriesName + ' ' + param.value
+      // 获取小时区间  
+      let hour = ('000' + parseInt((param.dataIndex / 3600), 10)).substr(-2)
+      let time = `${store.state.trend.day}${hour}`
+      if (_time === time) return //时间区间没有发生变化 直接return
+      _time = time
+      store.dispatch('setPointsHour', time)
+      return
+      // return param.axisValue + '<br/><i class="el-icon-star-on" style="color:red;margin-right:10px;"></i>' + param.seriesName + ' ' + param.value
     }
   },
   xAxis: {
     splitLine: { show: false },
     scale: true,
+    type: 'category',
+    data: Array.from({ length: 86400 }, (item, index) => ((index / 7199).toString().length === 1 || (index / 7199).toString().length === 2) ? ('000' + index / 7199 * 2).substr(-2) + ':00:00' : ''),
+    axisLabel: {
+      interval: 7198,
+      align: 'center'
+    },
     axisPointer: {
       value: 0,
-      snap: true,
       lineStyle: {
-        color: 'red',
+        color: 'rgba(245,8,26,0.7)',
         width: 2
       },
       label: {
@@ -51,9 +65,9 @@ export const options_24 = {
   grid: {
     show: false,
     left: '50px',
-    right: 0,
+    right: '50px',
     top: '10px',
-    bottom: '10px',
+    bottom: '30px',
     containLabe: true
   },
   series: [{
@@ -71,14 +85,50 @@ export const options_1 = Object.assign(JSON.parse(JSON.stringify(options_24)), {
     axisPointer: {
       type: 'line',
       lineStyle: {
-        color: 'red',
-        width: 100
+        color: 'rgba(245,8,26,0.7)',
+        width: 2
       }
     },
     formatter(param) {
       param = param[0]
-      return param.axisValue + '<br/><i class="el-icon-star-on" style="color:red;margin-right:10px;"></i>' + param.seriesName + ' ' + param.value
+      console.log(param)
+      // 获取小时区间  
+      let hour = parseInt((param.dataIndex / 3600), 10);
+      return
+      // return param.axisValue + '<br/><i class="el-icon-star-on" style="color:red;margin-right:10px;"></i>' + param.seriesName + ' ' + param.value
     }
+  },
+  xAxis: {
+    splitLine: { show: false },
+    scale: true,
+    type: 'category',
+    data: Array.from({ length: 3600 }, (item, index) => {
+      let hour = store.state.trend.hour
+      let fen = ('000' + (index / 299) * 5).substr(-2)
+      if (fen == 60) {
+        hour++
+        fen = '00'
+      }
+      return ((index / 299).toString().length === 1 || (index / 299).toString().length === 2) ? `${hour}:${fen}:00` : ''
+    }),
+    axisLabel: {
+      interval: 298,
+      align: 'center'
+    },
+    axisPointer: {
+      value: 0,
+      lineStyle: {
+        color: 'rgba(245,8,26,0.7)',
+        width: 2
+      },
+      label: {
+        show: false
+      },
+      handle: {
+        show: true,
+        color: 'transparent'
+      }
+    },
   },
 })
 
@@ -97,6 +147,31 @@ export function setSeries(data) {
 
 export function setSeries1(data) {
   // data = data.slice(0,20000)
+  this.options.xAxis = {
+    data: Array.from({ length: 3600 }, (item, index) => {
+      let hour = store.state.trend.hour
+      let fen = ('000' + (index / 299) * 5).substr(-2)
+      if (fen == 60) {
+        hour = ('000' + (parseInt(hour,10)+1)).substr(-2)
+        fen = '00'
+      }
+      return ((index / 299).toString().length === 1 || (index / 299).toString().length === 2) ? `${hour}:${fen}:00` : ''
+    }),
+    axisPointer: {
+      value: 0,
+      lineStyle: {
+        color: 'rgba(245,8,26,0.7)',
+        width: 2
+      },
+      label: {
+        show: false
+      },
+      handle: {
+        show: true,
+        color: 'transparent'
+      }
+    },
+  }
   this.options.series = [{
     type: 'scatter',
     animation: false,

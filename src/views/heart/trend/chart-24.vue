@@ -1,9 +1,10 @@
 <template>
   <div class="scatter-24">
-    <el-card>
+    <el-card v-loading="pointsDay.length === 0">
       <v-chart
         :options="options"
         class="chart"
+        :style="`height:${height}px`"
       />
     </el-card>
 
@@ -12,15 +13,13 @@
 
 <script>
 import { options_24, setSeries } from './config.js'
-import { getPoints } from 'api'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   props: {
-    data: {
-      type: Array,
-      default: function () {
-        return []
-      }
+    height: {
+      type: Number,
+      default:0
     }
   },
   data () {
@@ -28,29 +27,38 @@ export default {
       options: options_24
     }
   },
+  computed: {
+    ...mapGetters([
+      'pointsDay'
+    ])
+  },
   created () {
-    this._getPoints()
+    setTimeout(() => {
+      this.setPointsDay()
+    }, 300);
   },
   methods: {
-    async _getPoints () {
-      let result = await getPoints()
-
-      console.log(result)
-      let data = result.data.points.map(item => [item.t, item.y])
+    ...mapActions([
+      'setPointsDay'
+    ])
+  },
+  watch: {
+    pointsDay (value) {
+      let data = value.map((item, index) => [index, item.y])
       setSeries.call(this, data)
     }
-  },
+  }
 }
 </script>
 
 <style scoped lang='scss' type='text/css'>
 .scatter-24{
-    height: 300px; 
+    height: auto; 
     width: auto;
-    margin: 30px;
+    margin: 20px;
     .chart{
       width: 100%;
-      height: 260px;
+      height: auto;
     }
   }
 </style>

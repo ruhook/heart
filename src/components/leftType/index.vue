@@ -55,7 +55,7 @@
 <script>
 import state from 'components/state'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import { getTypes } from 'api'
+import { getTypes, updateType } from 'api'
 
 
 //正常心跳      N
@@ -80,6 +80,7 @@ export default {
       dialogVisible: false,
       activeName: '1',
       activeId: null,
+      id:null,
       radio: 0,
       types: []
     }
@@ -100,18 +101,32 @@ export default {
   },
   methods: {
     ok () {
-      this.setTypeShow(false)
+      this._updateType(this.id, this.radio)
     },
     handleClose (done) {
       done();
     },
     handleGetItem (item) {
+      this.id = item.id
       this.activeId = item.beatTypeId
+    },
+    async _updateType (id, beatTypeId) {
+      let result = await updateType(id, beatTypeId)
+      this.$notify({
+        title: '提示',
+        message: '操作成功',
+        type: 'success'
+      });
+      this.setChangedTypes()
+      this.setTypeShow(false)
     },
     async _getTypes () {
       let result = await getTypes()
       this.types = result.data
     },
+    ...mapActions([
+      'setChangedTypes'
+    ]),
     ...mapMutations([
       'setTypeShow'
     ])
@@ -121,10 +136,10 @@ export default {
 </script>
 
 <style scoped lang='scss' type='text/css'>
-.type-warp{
+.type-warp {
   .list {
     margin-top: 40px;
-    /deep/ .el-radio{
+    /deep/ .el-radio {
       width: 33%;
       margin-left: 0;
       margin-top: 5px;
