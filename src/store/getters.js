@@ -8,12 +8,14 @@ const getters = {
   details: state => state.mould.details,
   selectDetail: state => state.mould.selectDetail,
   selectBeatTime: state => state.mould.selectBeatTime,
-
+  isIn:state => state.mould.isIn,
+  
   pointsDay: state => state.trend.pointsDay,
   pointsHour: state => state.trend.pointsHour,
   pointsLine: state => state.trend.pointsLine,
   day: state => state.trend.day,
   hour: state => state.trend.hour,
+  hourIndex: state => state.trend.hourIndex,
 }
 
 export default getters

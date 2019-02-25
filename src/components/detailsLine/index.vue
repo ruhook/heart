@@ -58,7 +58,7 @@ export default {
       type: Object,
       default: null
     },
-    height:null,
+    height: null,
     isOperation: false
   },
   data () {
@@ -166,6 +166,22 @@ export default {
       left: 0;
       top: 0;
       z-index: 9;
+      i {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba($color: #000000, $alpha: 0.4);
+        color: #fff;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+        &:hover {
+          transition: all 0.3s;
+          background: rgba($color: #000000, $alpha: 0.6);
+        }
+      }
     }
     .right {
       display: flex;
@@ -177,21 +193,21 @@ export default {
       right: 0;
       top: 0;
       z-index: 9;
-    }
-    i {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba($color: #000000, $alpha: 0.4);
-      color: #fff;
-      border-radius: 50%;
-      font-size: 18px;
-      cursor: pointer;
-      &:hover {
-        transition: all 0.3s;
-        background: rgba($color: #000000, $alpha: 0.6);
+      i {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba($color: #000000, $alpha: 0.4);
+        color: #fff;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+        &:hover {
+          transition: all 0.3s;
+          background: rgba($color: #000000, $alpha: 0.6);
+        }
       }
     }
   }

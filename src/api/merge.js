@@ -4,7 +4,7 @@ export const planId = 1
 
 //cms-设备管理
 export const device = '/device/page'
-export const plan = '/device/plan'  //离线数据
+export const plan = '/device/plan' //离线数据
 
 //心电图-首页
 export const heartType = '/ecg/queryBeatType' //类型分组
@@ -16,4 +16,8 @@ export const ecgAdd = '/ecg/beat/add' //新增
 export const ecgUpdate = '/ecg/beat/update' //修改
 export const ecgDelete = '/ecg/beat/delete' //删除
 
-export const points = '/ecg/beat/points/test' //1天的散点图
+export const points = '/ecg/beat/points' //1天的散点图
+
+
+export const report = '/device/getReport' //报告查看
+export const message = '/device/sendReport' //下发报告

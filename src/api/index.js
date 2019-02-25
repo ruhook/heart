@@ -1,4 +1,4 @@
-import { heartType, heartThumbs, heartDetails, ecgAdd, ecgUpdate, ecgDelete, typeUpdate, types, points } from './merge'
+import { heartType, heartThumbs, heartDetails, ecgAdd, ecgUpdate, ecgDelete, typeUpdate, types, points, report, message } from './merge'
 import axios from './ajax'
 
 const planId = Number(localStorage.getItem('planId')) || null
@@ -68,6 +68,22 @@ export function getPoints() {
 export function getPointsHour(time) {
   return axios(points, {
     planId,
-    time: '2016051608'
+    time
+  })
+}
+
+//
+
+export function getReport() {
+  return axios(report, {
+    planId
+  })
+}
+
+
+export function sendMessage(msg) {
+  return axios(message, {
+    planId,
+    message:msg
   })
 }

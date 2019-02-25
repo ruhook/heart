@@ -1,7 +1,7 @@
 <template>
   <div class="warp">
     <el-menu
-      default-active="1"
+      :default-active="route[$route.name]"
       class="menu"
       background-color="#545c64"
       text-color="#fff"
@@ -41,7 +41,8 @@ import { mapMutations } from 'vuex'
 export default {
   data () {
     return {
-      router: ['/mould', '', '/trend', '/report']
+      router: ['/mould', '', '/trend', '/report'],
+      route:{'mould':'1','trend':'3','report':'4',}
     }
   },
   methods: {

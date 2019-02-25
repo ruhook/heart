@@ -137,18 +137,19 @@ const mould = {
      * 获取心波详情图
      * @param {*} { commit }
      */
-    setHeartDetails({ commit, state }) {
+    setHeartDetails({ commit, state }, beatTime) {
       commit('SET_DETAILS', {})
       return new Promise(async (resolve, reject) => {
         try {
           commit('setSelectBeatTime', state.activeThumb.beatTime)
 
           let options = {
-            beatTime: state.activeThumb.beatTime
+            beatTime: beatTime || state.activeThumb.beatTime
           }
           let result = await getHeartDetails(options)
           // let resultData = result.resultData
           // let total = result.total
+
           commit('SET_DETAILS', result.data)
 
           commit(
@@ -193,54 +194,80 @@ const mould = {
         }
       })
     },
-    //新增ecg
-    async setAddEcg({ commit, state, dispatch }, from = 'mould') {
+    //新增ecg-准备工作
+    async setAddEcgReady({ commit, state, dispatch }, from = 'mould') {
       let result = await dispatch('getIsIn', from)
-      if (state.isIn.length !== 0) {
-        vue.$notify.error({
-          title: '新增失败',
-          message: '目前所处位置有心跳点存在，不可新增，请重新选择位置'
+      return new Promise(async (resolve, reject) => {
+        if (state.isIn.length !== 0) {
+          vue.$notify.error({
+            title: '新增失败',
+            message: '目前所处位置有心跳点存在，不可新增，请重新选择位置'
+          })
+          resolve({
+            success: false
+          })
+        }
+        resolve({
+          success: true
         })
-        return
-      }
+      })
+    },
+    async setAddEcg({ commit, state, dispatch }, { beatGraphId, from = 'mould' }) {
       return new Promise(async (resolve, reject) => {
         try {
           let data = state.selectDetail
-          let index = data.dataIndex
+          let index = data.dataIndex || 1250
           let start = state.details.start
           let options = {
             beatTime: start + 8 * index,
-            beatGraphId: state.detailsNeedType
+            beatGraphId
           }
 
           let result = await addEcg(options)
 
-          resolve()
+          resolve({
+            success: true,
+            beatTime: options.beatTime
+          })
         } catch (error) {
           reject(error)
         }
       })
     },
     //修改ecg
-    async setUpdateEcg({ commit, state, dispatch }, from = 'mould') {
+    async setUpdateEcgReady({ commit, state, dispatch }, from = 'mould') {
       let result = await dispatch('getIsIn', from)
-      if (state.isIn.length === 0) {
-        vue.$notify.error({
-          title: '修改失败',
-          message: '目前所处位置没有心跳点存在，不可修改，请重新选择位置'
+      return new Promise(async (resolve, reject) => {
+        if (state.isIn.length === 0) {
+          vue.$notify.error({
+            title: '修改失败',
+            message: '目前所处位置没有心跳点存在，不可修改，请重新选择位置'
+          })
+          resolve({
+            success: false
+          })
+        }
+        resolve({
+          success: true
         })
-        return
-      }
-      // updateEcg
+      })
+    },
+    async setUpdateEcg({ commit, state, dispatch }, { beatGraphId, from = 'mould' }) {
       return new Promise(async (resolve, reject) => {
         try {
+          let data = state.selectDetail
+          let index = data.dataIndex || 1250
+          let start = state.details.start
           let options = {
             id: state.isIn[0].beatId,
-            beatGraphId: 11
+            beatGraphId
           }
           let result = await updateEcg(options)
 
-          resolve()
+          resolve({
+            success: true,
+            beatTime: state.details.start + 8 * index,
+          })
         } catch (error) {
           reject(error)
         }
@@ -254,7 +281,9 @@ const mould = {
           title: '删除失败',
           message: '目前所处位置没有心跳点存在，不可删除，请重新选择位置'
         })
-        return
+        Promise.resolve({
+          success: false
+        })
       }
 
 
@@ -267,7 +296,10 @@ const mould = {
               }
               let result = await deleteEcg(options.id)
 
-              resolve()
+              resolve({
+                success: true,
+                beatTime: state.details.start
+              })
             } catch (error) {
               reject(error)
             }
@@ -293,6 +325,7 @@ const mould = {
           return dataIndex > item.startIndex && dataIndex < item.endIndex
         })
         commit('SET_IS_IN', result)
+        console.log('isin', result);
         resolve()
       })
     },

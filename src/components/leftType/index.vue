@@ -17,6 +17,7 @@
         :waveTotal="item.beatCount"
         :waveId="item.id"
         :data="item.ecgs"
+        @click.native="$emit('initPage')"
         @getItem="handleGetItem(item)"
       />
     </el-collapse-item>

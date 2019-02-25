@@ -44,8 +44,17 @@ export default {
   },
   watch: {
     pointsDay (value) {
-      let data = value.map((item, index) => [index, item.y])
-      setSeries.call(this, data)
+      let result = []
+      let data = value.forEach((item, index) => {
+        if(item.y.length === 0) {
+          result.push([index, 0])
+          return
+        } 
+        item.y.forEach(item=>{
+          result.push([index,item])
+        })
+      })
+      setSeries.call(this, result)
     }
   }
 }

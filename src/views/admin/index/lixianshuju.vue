@@ -39,7 +39,7 @@
           align="center"
         >
           <template slot-scope="scope">
-            <el-tag :type="scope.row.status === 0 ? '' : scope.row.status === 1 ?  'danger': 'success' ">{{statusList[scope.row.status]}}</el-tag>
+            <el-tag :type="scope.row.status === 0 ? '' : scope.row.status === 1 ?  'danger': 'success' ">{{statusList[scope.row.status-1]}}</el-tag>
           </template>
         </el-table-column>
 
@@ -109,7 +109,7 @@ export default {
     },
     handleClick (id) {
       localStorage.setItem('planId', id)
-      window.open(`/mould/${id}`)
+      window.open(`/#/mould/${id}`)
     }
   },
 }

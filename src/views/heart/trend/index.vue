@@ -36,7 +36,7 @@ import chart1 from './chart-1'
 import detailsLine from 'components/detailsLine'
 import detailsBtn from 'components/detailsLine/rightBtn'
 
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
   data () {
     return {
@@ -44,30 +44,41 @@ export default {
       isSelectOperation: false,
     }
   },
+  metaInfo: {
+    title: '心电图-趋势'
+  },
   mounted () {
-    this.setHeartType()
+    this.setChangedTypes()
     this.height = parseInt(document.body.scrollHeight / 4, 10)
   },
   computed: {
     ...mapGetters([
       'typeData',
-      'details'
+      'details',
+      'selectBeatTime'
     ])
   },
   methods: {
     nextPage () {
-
+      //beatTime++ 递增  20000ms
+      this.setSelectBeatTime(this.selectBeatTime + 20000)
+      this.setHeartChangeDetails()
     },
     prevPage () {
-
+      this.setSelectBeatTime(this.selectBeatTime - 20000)
+      this.setHeartChangeDetails()
     },
     //选中操作按钮
     selectOperation () {
       this.isSelectOperation = !this.isSelectOperation
     },
+    ...mapMutations([
+      'setSelectBeatTime'
+    ]),
     ...mapActions([
       'setPointsLine',
-      'setHeartType'
+      'setChangedTypes',
+      'setHeartChangeDetails'
     ])
   },
   components: { chart24, chart1, detailsLine, detailsBtn }

@@ -3,24 +3,24 @@
     <el-card class="box-card">
       <h-line />
       <pre>
-  开始/结束  时间：15:39:24/14:53:20            最快心率：154bpm，（07:22:28）
-  记录总时间：23小时13分0秒            最慢心率：36bpm，（07:22:28）
-  总心搏数：89669次
+  开始/结束  时间：{{beatInfo.starttime}}/{{beatInfo.endtime}}            最快心率：{{beatInfo.maxbpm}}bpm，（{{beatInfo.maxbpmtime}}）
+  记录总时间：  秒            最慢心率：{{beatInfo.minbpm}}bpm，（{{beatInfo.minbpmtime}}）
+  总心搏数：{{beatInfo.beattotal}}次
 </pre>
       <h-line />
       <pre>
   ---室性心律失常---
-  室性心搏总数：4    单个室早：4阵          成对室早：0阵         室性二联律：0阵
-  室速：0阵，共0次，最快0bpm，发生时间：   最长0秒，最快频率0bpm，发生时间：
-  平均每小时室早：0           一小时最多室早：2，发生时间：16:39-17:39
+  室性心搏总数：{{info3.count}}    单个室早： 阵          成对室早： 阵         室性二联律： 阵
+  室速： 阵，共 次，最快{{info3.maxbpm}}bpm，发生时间：{{info3.maxbpmtime}}   最长 秒，最快频率 bpm，发生时间：
+  平均每小时室早：            一小时最多室早： ，发生时间： 
 </pre>
       <h-line />
       <pre>
   ---室上性心律失常---
-  室上性心搏总数：4    单个室上早：4阵          成对室上早：0阵         室上性二联律：0阵
-  室上速：0阵，共0次，最快0bpm，发生时间：09:58:00   最长85.624秒，最快频率0bpm，发生时间：15：39：24
-  平均每小时室上早：23           一小时最多室上早：2，发生时间：16:39-17:39
-  房颤：65阵，最长1694.444秒，起始于：21:37:29   终止于：22:05:44
+  室上性心搏总数：{{info2.count}}     单个室上早： 阵          成对室上早： 阵         室上性二联律： 阵
+  室上速： 阵，共 次，最快{{info2.maxbpm}}bpm，发生时间：{{info2.maxbpmtime}}   最长 秒，最快频率 bpm，发生时间：
+  平均每小时室上早：           一小时最多室上早：，发生时间：
+  房颤： 阵，最长 秒，起始于：    终止于： 
 </pre>
       <h-line />
     </el-card>
@@ -34,7 +34,7 @@
     >
     </el-input>
 
-    <h-table />
+    <h-table :list="hourInfos" />
 
     <el-button
       class="btn"
@@ -49,26 +49,57 @@
 <script>
 import hLine from './line'
 import hTable from './table'
+import { getReport, sendMessage } from 'api'
+
 export default {
   data () {
     return {
-      textarea: ''
+      textarea: '',
+      beatInfo: {},
+      info2: {},
+      info3: {},
+      hourInfos: []
     }
   },
   metaInfo: {
-    title: '心电图-趋势'
+    title: '心电图-报告'
+  },
+  mounted () {
+    this._getReport()
   },
   methods: {
+    async _getReport () {
+      let result = await getReport()
+
+      this.beatInfo = result.data.beatInfo
+      let beatTypeInfos = result.data.beatTypeInfos
+      this.info2 = beatTypeInfos.filter(item => item.beatType === 2)[0] || {}
+      this.info3 = beatTypeInfos.filter(item => item.beatType === 3)[0] || {}
+
+      this.hourInfos = result.data.hourInfos
+    },
+    async sendMessage (msg) {
+      let result = await sendMessage(msg)
+
+      this.$message({
+        type: 'success',
+        message: '发送成功!'
+      });
+    },
     push () {
+      if (!this.textarea)      {
+        this.$notify.error({
+          title: '提示',
+          message: '下发报告内容不能为空'
+        });
+        return
+      }
       this.$confirm('是否要发送报告?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '发送成功!'
-        });
+        this.sendMessage(this.textarea)
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -77,7 +108,7 @@ export default {
       });
     }
   },
-  components: { hLine,hTable }
+  components: { hLine, hTable }
 }
 </script>
 

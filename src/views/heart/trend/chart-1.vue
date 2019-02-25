@@ -1,6 +1,6 @@
 <template>
   <div class="scatter-1">
-    <el-card>
+    <el-card v-loading="pointsHour.length === 0">
       <v-chart
         :options="options"
         class="chart"
@@ -19,7 +19,7 @@ export default {
   props: {
     height: {
       type: Number,
-      default:0
+      default: 0
     }
   },
   data () {
@@ -30,41 +30,50 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'hour'
+      'hour',
+      'pointsHour'
     ])
   },
   created () {
-    this.getPointsHour()
   },
   methods: {
     async getPointsHour () {
       let result = await getPointsHour()
 
       console.log(result)
-      let data = result.data.points.map((item, index) => [index, item.y]).slice(0, 86400 / 24)
+      let data = result.data.points.map((item, index) => [index, item.y])
       this.data = data
       setSeries1.call(this, data)
     }
   },
   watch: {
-    hour (value) {
-      console.log(value)
-      setSeries1.call(this, this.data)
+    pointsHour (value) {
+      let result = []
+      let data = value.forEach((item, index) => {
+        if (item.y.length === 0)        {
+          result.push([index, 0])
+          return
+        }
+        item.y.forEach(item => {
+          result.push([index, item])
+        })
+      })
+      setSeries1.call(this, result)
     }
   }
 }
 </script>
 
 <style scoped lang='scss' type='text/css'>
-.scatter-1{
-    height: auto; 
-    width: auto;
-    margin: 20px;
-    margin-top: 10px;
+.scatter-1 {
+  height: auto;
+  width: auto;
+  margin: 20px;
+  margin-top: 10px;
 
-    .chart{
-      width: 100%;
-      height: auto;
-    }
+  .chart {
+    width: 100%;
+    height: auto;
   }
+}
 </style>

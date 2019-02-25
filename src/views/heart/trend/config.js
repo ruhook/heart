@@ -1,5 +1,6 @@
 import store from 'store'
-let _time = null
+import dayjs from 'dayjs'
+
 export const options_24 = {
   animation: false,
   tooltip: {
@@ -17,11 +18,13 @@ export const options_24 = {
     formatter(param) {
       param = param[0]
       // 获取小时区间  
-      let hour = ('000' + parseInt((param.dataIndex / 3600), 10)).substr(-2)
+      let hour = ('000' + parseInt((param.data[0] / 360), 10)).substr(-2)
+      console.log(param)
       let time = `${store.state.trend.day}${hour}`
-      if (_time === time) return //时间区间没有发生变化 直接return
-      _time = time
-      store.dispatch('setPointsHour', time)
+      store.dispatch('setPointsHour', { time, index: param.data[0] })
+
+      // if (_time === time) return //时间区间没有发生变化 直接return
+      // _time = time
       return
       // return param.axisValue + '<br/><i class="el-icon-star-on" style="color:red;margin-right:10px;"></i>' + param.seriesName + ' ' + param.value
     }
@@ -30,9 +33,9 @@ export const options_24 = {
     splitLine: { show: false },
     scale: true,
     type: 'category',
-    data: Array.from({ length: 86400 }, (item, index) => ((index / 7199).toString().length === 1 || (index / 7199).toString().length === 2) ? ('000' + index / 7199 * 2).substr(-2) + ':00:00' : ''),
+    data: Array.from({ length: 8641 }, (item, index) => ((index / 720).toString().length === 1 || (index / 720).toString().length === 2) ? ('000' + index / 720 * 2).substr(-2) + ':00:00' : ''),
     axisLabel: {
-      interval: 7198,
+      interval: 719,
       align: 'center'
     },
     axisPointer: {
@@ -91,9 +94,12 @@ export const options_1 = Object.assign(JSON.parse(JSON.stringify(options_24)), {
     },
     formatter(param) {
       param = param[0]
-      console.log(param)
-      // 获取小时区间  
-      let hour = parseInt((param.dataIndex / 3600), 10);
+      let date = `${store.state.trend.day}`
+      let dayhour = dayjs(date).valueOf() + store.state.trend.hour * 3600000 // 获取当天+小时的时间戳
+      let fen = parseInt(param.data[0], 10) * 10000 // 获取分钟所占的时间戳
+
+      let _date = dayhour + fen //  时间戳
+      store.dispatch('setPointsLine', _date)
       return
       // return param.axisValue + '<br/><i class="el-icon-star-on" style="color:red;margin-right:10px;"></i>' + param.seriesName + ' ' + param.value
     }
@@ -102,17 +108,17 @@ export const options_1 = Object.assign(JSON.parse(JSON.stringify(options_24)), {
     splitLine: { show: false },
     scale: true,
     type: 'category',
-    data: Array.from({ length: 3600 }, (item, index) => {
+    data: Array.from({ length: 361 }, (item, index) => {
       let hour = store.state.trend.hour
-      let fen = ('000' + (index / 299) * 5).substr(-2)
+      let fen = ('000' + (index / 30) * 5).substr(-2)
       if (fen == 60) {
         hour++
         fen = '00'
       }
-      return ((index / 299).toString().length === 1 || (index / 299).toString().length === 2) ? `${hour}:${fen}:00` : ''
+      return ((index / 30).toString().length === 1 || (index / 30).toString().length === 2) ? `${hour}:${fen}:00` : ''
     }),
     axisLabel: {
-      interval: 298,
+      interval: 29,
       align: 'center'
     },
     axisPointer: {
@@ -148,17 +154,17 @@ export function setSeries(data) {
 export function setSeries1(data) {
   // data = data.slice(0,20000)
   this.options.xAxis = {
-    data: Array.from({ length: 3600 }, (item, index) => {
+    data: Array.from({ length: 361 }, (item, index) => {
       let hour = store.state.trend.hour
-      let fen = ('000' + (index / 299) * 5).substr(-2)
+      let fen = ('000' + (index / 30) * 5).substr(-2)
       if (fen == 60) {
-        hour = ('000' + (parseInt(hour,10)+1)).substr(-2)
+        hour = ('000' + (parseInt(hour, 10) + 1)).substr(-2)
         fen = '00'
       }
-      return ((index / 299).toString().length === 1 || (index / 299).toString().length === 2) ? `${hour}:${fen}:00` : ''
+      return ((index / 30).toString().length === 1 || (index / 30).toString().length === 2) ? `${hour}:${fen}:00` : ''
     }),
     axisPointer: {
-      value: 0,
+      value: store.state.trend.hourIndex || 0,
       lineStyle: {
         color: 'rgba(245,8,26,0.7)',
         width: 2

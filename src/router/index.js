@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import NProgress from 'nprogress' // Progress 进度条
+import 'nprogress/nprogress.css' // Progress 进度条样式
 //admin相关模块
 import Login from 'views/admin/login'
 import Index from 'views/admin/index'
@@ -16,7 +18,7 @@ Vue.use(Router)
 
 const adminRouter = [{
   path: '/login',
-  name:'login',
+  name: 'login',
   component: Login
 }, {
   path: '/',
@@ -49,25 +51,32 @@ const heartRouter = [{
     component: Mould,
   }, {
     path: '/trend/:id',
+    name: 'trend',
     component: Trend
   }, {
     path: '/report/:id',
+    name: 'report',
     component: Report
   }]
 }]
 
 let router = new Router({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes: adminRouter.concat(heartRouter)
 })
-
 router.beforeEach(async (to, from, next) => {
+  NProgress.start()
   if (!localStorage.getItem('token') && to.name != 'login') {
+    NProgress.done()
     next({ path: '/login', replace: false })
   }
 
   next()
+})
+
+router.afterEach(() => {
+  NProgress.done() // 结束Progress
 })
 
 export default router

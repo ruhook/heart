@@ -2,7 +2,7 @@
   <div class="index">
     <el-menu
       default-active="1"
-      class="el-menu-vertical-demo"
+      class="menu"
       @open="handleOpen"
       @close="handleClose"
       background-color="#545c64"
@@ -84,10 +84,13 @@ export default {
   /deep/ .el-menu{
     width: 200px;
     height: 100%;
+    min-height: 750px;
   }
   .admin-warp{
     width: calc(100% - 200px);
     height: 100%;
+    min-height: 750px;
+    overflow: auto;
     .tag-top{
       height: 50px;
       line-height: 50px;

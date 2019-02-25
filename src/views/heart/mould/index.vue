@@ -4,7 +4,10 @@
       class="module-left"
       v-loading="typeData.length === 0"
     >
-      <left-type :data="typeData" />
+      <left-type
+        :data="typeData"
+        @initPage="initPage"
+      />
     </div>
 
     <div class="module-right">
@@ -24,6 +27,7 @@
             :gutter="5"
             class="group-content"
             v-loading="thumbs.length === 0"
+            :style="`align-content: ${thumbs.length>16? 'space-between':'flex-start'}`"
           >
             <el-col
               :span="6"
@@ -55,6 +59,8 @@
           @selectOperation="selectOperation"
           :isSelectOperation="isSelectOperation"
           :typeData="typeData"
+          :beatGraphId="selectType.id"
+          :pages="thumbIndex"
         />
       </div>
     </div>
@@ -77,12 +83,23 @@ export default {
   metaInfo: {
     title: '心电图-模块'
   },
+  data () {
+    return {
+      thumbIndex: 1,
+      loading: false,
+      isSelectOperation: false,
+    }
+  },
   mounted () {
     this.setHeartType()
   },
   methods: {
+    initPage () {
+      this.thumbIndex = 1
+    },
     handleCurrentChange (index) {
-      this.setHeartThumbs({ beatGraphId: this.selectType.id, pages: index })
+      this.thumbIndex = index
+      this.setHeartThumbs({ beatGraphId: this.selectType.id, pages: this.thumbIndex })
       this.handleClickThumbs('reset')
     },
     //点击thumbs，重置active，获取详情图
@@ -103,7 +120,6 @@ export default {
     },
     prevPage () {
       this.setSelectBeatTime(this.selectBeatTime - 20000)
-      this.setHeartChangeDetails()
       this.setHeartChangeDetails()
     },
     ...mapActions([
@@ -131,13 +147,6 @@ export default {
       'selectBeatTime'
     ])
 
-  },
-  data () {
-    return {
-      thumbIndex: 0,
-      loading: false,
-      isSelectOperation: false,
-    }
   },
   components: {
     thumb, detailsLine, leftType, detailsBtn

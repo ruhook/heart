@@ -136,8 +136,8 @@ export function changeRatio(ratio) {
     splitLine: { show: false },
     type: 'value',
     minInterval: 5000,
-    min:min*ratio,
-    max:max*ratio,
+    min: min * ratio,
+    max: max * ratio,
     axisPointer: {
       snap: true
     }
