@@ -3,7 +3,6 @@ import axios from './ajax'
 
 const planId = Number(localStorage.getItem('planId')) || null
 
-console.log(planId);
 export function getHeartType() {
   return axios(heartType, {
     planId

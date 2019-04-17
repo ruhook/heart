@@ -1,7 +1,11 @@
 <template>
   <div class="lixianshuju">
     <div class="name">{{deviceName}}的离线数据</div>
-    <div class="table-warp">
+
+    <div
+      class="table-warp"
+      v-loading="loading"
+    >
       <el-table
         :data="tableData"
         style="width: 100%"
@@ -39,17 +43,28 @@
           align="center"
         >
           <template slot-scope="scope">
-            <el-tag :type="scope.row.status === 0 ? '' : scope.row.status === 1 ?  'danger': 'success' ">{{statusList[scope.row.status-1]}}</el-tag>
+            <el-tag :type="scope.row.status === 0 
+              ? '' 
+              : scope.row.status === 1 
+                ? 'danger'
+                : 'success' ">{{statusList[scope.row.status]}}</el-tag>
           </template>
         </el-table-column>
 
         <el-table-column
           align="center"
           label="操作"
-          width="200"
+          width="300"
         >
           <template slot-scope="scope">
             <el-button
+              v-if="scope.row.status === 1 || scope.row.status === 2"
+              type="primary"
+              @click="_postExecPlan(scope.row.id)"
+              size="small"
+            >重新计算</el-button>
+            <el-button
+              v-if="scope.row.status!==0"
               @click="handleClick(scope.row.id)"
               size="small"
             >查看心电图</el-button>
@@ -74,7 +89,7 @@
 </template>
 
 <script>
-import { getPlan } from 'api/admin'
+import { getPlan, postExecPlan } from 'api/admin'
 
 export default {
   data () {
@@ -83,7 +98,8 @@ export default {
       current: 1,
       total: 0,
       tableData: [],
-      statusList: ['数据上传中', '数据未编辑', '数据已经编辑']
+      statusList: ['数据上传中', '数据未编辑', '数据已经编辑'],
+      loading: true
     }
   },
   metaInfo: {
@@ -92,7 +108,7 @@ export default {
   mounted () {
     let deviceName = this.$route.params.name
     this.deviceName = deviceName
-    this._getPlan(deviceName)
+    this._getPlan(this.deviceName)
   },
   methods: {
     async _getPlan (deviceName, pageNum, pageSize) {
@@ -100,6 +116,18 @@ export default {
 
       this.tableData = result.resultData
       this.total = result.total
+      this.loading = false
+    },
+    async _postExecPlan (planId) {
+      this.loading = true
+      let result = await postExecPlan(planId)
+
+      this.$notify({
+        title: '提示',
+        message: '离线数据重新计算成功',
+        type: 'success'
+      });
+      this._getPlan(this.deviceName)
     },
     handleSizeChange (val) {
 

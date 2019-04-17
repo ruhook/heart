@@ -5,7 +5,7 @@ export const planId = 1
 //cms-设备管理
 export const device = '/device/page'
 export const plan = '/device/plan' //离线数据
-
+export const execPlan = '/ecg/execPlan' // 重新计算
 //心电图-首页
 export const heartType = '/ecg/queryBeatType' //类型分组
 export const heartThumbs = '/ecg/queryBeat' //缩略图
